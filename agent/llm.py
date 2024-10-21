@@ -19,6 +19,19 @@ def get_client(model_str: str) -> FunctionCallingLLM:
         from llama_index.llms.openai import OpenAI
 
         return OpenAI(model=model_name)
+    elif provider == "nebius":
+        import os
+        from langchain_openai import ChatOpenAI
+        from llama_index.llms.langchain import LangChainLLM
+  
+        return LangChainLLM(
+            llm=ChatOpenAI(
+                base_url="https://api.studio.nebius.ai/v1/",
+                api_key=os.environ["NB_AI_STUDIO_KEY"],
+                model=model_name,
+            )
+        )
+
     elif provider == "anthropic":
         from llama_index.llms.anthropic import Anthropic
 

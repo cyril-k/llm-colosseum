@@ -51,6 +51,10 @@ class Player:
             assert (
                 os.environ.get("CEREBRAS_API_KEY") is not None
             ), "Cerebras API key not set"
+        if self.model.startswith("nebius"):
+            assert (
+                os.environ.get("NB_AI_STUDIO_KEY") is not None
+            ), "Nebius AI Studio API key not set"
 
 class Player1(Player):
     def __init__(

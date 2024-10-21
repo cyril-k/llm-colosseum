@@ -16,11 +16,15 @@ def main():
         render=True,
         player_1=Player1(
             nickname="Daddy",
-            model="openai:gpt-4o",
+            # model="openai:gpt-4o",
+            # model="nebius:meta-llama/Meta-Llama-3.1-8B-Instruct-fast",
+            model="nebius:meta-llama/Meta-Llama-3.1-70B-Instruct-fast",
         ),
         player_2=Player2(
             nickname="Baby",
-            model="openai:gpt-4o-mini",
+            # model="openai:gpt-4o-mini",
+            # model="nebius:microsoft/Phi-3-mini-4k-instruct-fast",
+            model="nebius:mistralai/Mixtral-8x7B-Instruct-v0.1-fast",
         ),
     )
     return game.run()
