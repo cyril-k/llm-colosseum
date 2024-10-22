@@ -4,6 +4,7 @@ import random
 import traceback
 from threading import Thread
 from typing import List, Optional
+import time
 
 from agent import KEN_GREEN, KEN_RED, Robot
 from agent.config import MODELS
@@ -145,6 +146,9 @@ class Game:
     seed: Optional[int] = 42
     settings: EnvironmentSettingsMultiAgent = None  # Settings of the game
     env = None  # Environment of the game
+    frame = None
+    win_message = None
+    stopped = False
 
     def __init__(
         self,
@@ -158,6 +162,9 @@ class Game:
         outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
         seed: int = 42,
+        frame = None,
+        win_message = None,
+        stopped = False
     ):
         """_summary_
 
@@ -194,6 +201,9 @@ class Game:
             )
             self.controller.start()
         self.player_2 = player_2
+        self.frame = frame
+        self.win_message = win_message
+        self.stopped = stopped
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
         """
@@ -285,10 +295,14 @@ class Game:
             player2_thread = PlanAndActPlayer2(game=self, episode=episode)
             player2_thread.start()
 
-            while True:
+            while not self.stopped:
                 # Render the game
                 if self.render:
                     self.env.render()
+                else:
+                    self.frame = self.env.render()
+                    time.sleep(0.1)
+
 
                 actions = self.actions
 
@@ -331,13 +345,20 @@ class Game:
                     player2_thread.running = False
                     episode.player_1_won = p1_wins == 1
                     if episode.player_1_won:
+                        # win_message = f"Player1 {self.player_1.robot.model} '{self.player_1.nickname}' won!"
+                        win_message = f"Player 1 won! | {self.player_1.robot.model.split('/')[-1]} "
                         print(
-                            f"[red] Player1 {self.player_1.robot.model} '{self.player_1.nickname}' won!"
+                            f"[red] {win_message}"
                         )
                     else:
+                        # win_message = f"Player2 {self.player_2.robot.model} '{self.player_2.nickname}' won!"
+                        win_message = f"Player 2 won! | {self.player_2.robot.model.split('/')[-1]} "
                         print(
-                            f"[green] Player2 {self.player_2.robot.model} {self.player_2.nickname} won!"
+                            f"[green] {win_message}"
                         )
+
+                    self.win_message = win_message.replace("-fast", "")
+                    time.sleep(1)
                     episode.save()
                     self.env.close()
                     break

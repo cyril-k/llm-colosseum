@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 from starlette.responses import StreamingResponse
 import asyncio
-
+import time
 import diambra.arena
 import cv2
 import threading
 
 app = FastAPI()
+
+latest_frame = None
 
 def game_loop():
     global latest_frame
@@ -20,10 +22,11 @@ def game_loop():
     while True:
         # Render environment as an RGB array
         frame = env.render()
-
+        time.sleep(0.1)
         # Convert the RGB frame to BGR (for OpenCV compatibility) and then encode it to JPEG
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 75]
         frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        ret, jpeg = cv2.imencode('.jpg', frame_bgr)
+        ret, jpeg = cv2.imencode('.jpg', frame_bgr, encode_param)
         
         # Update the global latest_frame with the new JPEG image
         if ret:
